@@ -22,6 +22,9 @@ import Elm from "./main"
 // import socket from "./socket"
 
 const elmDiv = document.querySelector("#elm_target")
+const csrf = document.querySelector("#hidden_csrf")
 if (elmDiv) {
-    Elm.Main.embed(elmDiv)
+    const app = Elm.Main.embed(elmDiv)
+
+    console.log(csrf.innerHTML)
 }

@@ -44,8 +44,10 @@ defmodule ChatAppWeb.Router do
   scope "/", ChatAppWeb do
     pipe_through :protected
 
-
+    get "/dashboard", PageController, :dashboard
   end
+
+
 
   # Other scopes may use custom stacks.
   # scope "/api", ChatAppWeb do

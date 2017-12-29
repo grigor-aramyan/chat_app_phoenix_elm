@@ -1,37 +1,126 @@
 var _user$project$Main$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _user$project$Main$dashboardPage = function (model) {
+	return _elm_lang$html$Html$text('dashboard page');
+};
+var _user$project$Main$notFoundPage = _elm_lang$html$Html$text('page not found');
+var _user$project$Main$currentPage = function (model) {
+	var _p0 = model.route;
+	if (_p0.ctor === 'DashRoute') {
+		return _user$project$Main$dashboardPage(model);
+	} else {
+		return _user$project$Main$notFoundPage;
+	}
+};
 var _user$project$Main$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('btn btn-info'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('button'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		});
+	return _user$project$Main$currentPage(model);
+};
+var _user$project$Main$onLinkClick = function (message) {
+	var options = {stopPropagation: false, preventDefault: true};
+	return A3(
+		_elm_lang$html$Html_Events$onWithOptions,
+		'click',
+		options,
+		_elm_lang$core$Json_Decode$succeed(message));
+};
+var _user$project$Main$dashPath = '/dashboard';
+var _user$project$Main$Model = F3(
+	function (a, b, c) {
+		return {user: a, token: b, route: c};
+	});
+var _user$project$Main$User = F2(
+	function (a, b) {
+		return {email: a, password: b};
+	});
+var _user$project$Main$initialModel = function (route) {
+	return A3(
+		_user$project$Main$Model,
+		A2(_user$project$Main$User, '', ''),
+		'',
+		route);
+};
+var _user$project$Main$NotFoundRoute = {ctor: 'NotFoundRoute'};
+var _user$project$Main$DashRoute = {ctor: 'DashRoute'};
+var _user$project$Main$matchers = _evancz$url_parser$UrlParser$oneOf(
+	{
+		ctor: '::',
+		_0: A2(
+			_evancz$url_parser$UrlParser$map,
+			_user$project$Main$DashRoute,
+			_evancz$url_parser$UrlParser$s('dashboard')),
+		_1: {ctor: '[]'}
+	});
+var _user$project$Main$parseLocation = function (location) {
+	var _p1 = A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Main$matchers, location);
+	if (_p1.ctor === 'Just') {
+		return _p1._0;
+	} else {
+		return _user$project$Main$NotFoundRoute;
+	}
+};
+var _user$project$Main$init = function (location) {
+	var currentRoute = _user$project$Main$parseLocation(location);
+	return {
+		ctor: '_Tuple2',
+		_0: _user$project$Main$initialModel(currentRoute),
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
 };
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p0 = msg;
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'UpdateEmail':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							user: A2(_user$project$Main$User, _p2._0, model.user.password)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UpdatePassword':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							user: A2(_user$project$Main$User, model.user.email, _p2._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'ChangeLocation':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(_p2._0)
+				};
+			default:
+				var newRoute = _user$project$Main$parseLocation(_p2._0);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{route: newRoute}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
 	});
-var _user$project$Main$Model = function (a) {
-	return {something: a};
+var _user$project$Main$OnChangeLocation = function (a) {
+	return {ctor: 'OnChangeLocation', _0: a};
 };
-var _user$project$Main$initialModel = _user$project$Main$Model('');
-var _user$project$Main$init = {ctor: '_Tuple2', _0: _user$project$Main$initialModel, _1: _elm_lang$core$Platform_Cmd$none};
-var _user$project$Main$main = _elm_lang$html$Html$program(
+var _user$project$Main$main = A2(
+	_elm_lang$navigation$Navigation$program,
+	_user$project$Main$OnChangeLocation,
 	{init: _user$project$Main$init, update: _user$project$Main$update, view: _user$project$Main$view, subscriptions: _user$project$Main$subscriptions})();
-var _user$project$Main$DumbMsg = {ctor: 'DumbMsg'};
+var _user$project$Main$ChangeLocation = function (a) {
+	return {ctor: 'ChangeLocation', _0: a};
+};
+var _user$project$Main$UpdatePassword = function (a) {
+	return {ctor: 'UpdatePassword', _0: a};
+};
+var _user$project$Main$UpdateEmail = function (a) {
+	return {ctor: 'UpdateEmail', _0: a};
+};
